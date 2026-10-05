@@ -1,4 +1,5 @@
 const HTMLPlugin = require('html-webpack-plugin')
+const CopyPlugin = require('copy-webpack-plugin')
 
 module.exports = {
   entry: ['@babel/polyfill', './src/index.js'],
@@ -13,7 +14,11 @@ module.exports = {
     new HTMLPlugin({
       filename: 'index.html',
       template: './src/index.html'
-    })
+    }),
+    // Статические ассеты (стили) копируются в dist как есть
+    new CopyPlugin([
+      { from: 'src/styles.css', to: 'styles.css' }
+    ])
   ],
   resolve: {
     extensions: ['.js']

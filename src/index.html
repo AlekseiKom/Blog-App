@@ -1,64 +1,157 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css">
-  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.9/css/solid.css">
-  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.9/css/fontawesome.css">
-  <link rel="stylesheet" href="https://unpkg.com/mustard-ui@latest/dist/css/mustard-ui.min.css">
+  <meta name="description" content="Личный планировщик: заметки, памятки, задачи и календарь в одном месте.">
+  <title>Планировщик — заметки, задачи и календарь</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%236366f1'/%3E%3Cstop offset='100%25' stop-color='%23a855f7'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100' height='100' rx='24' fill='url(%23g)'/%3E%3Cpath d='M30 52l14 14 26-28' stroke='white' stroke-width='9' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
   <link rel="stylesheet" href="styles.css">
-  <title>JS Prepare</title>
 </head>
 <body>
-<header id="header">
-  <h1 class="title">БЛОГ новостей и заметок</h1>
-  <h2 class="subtitle">Создавайте статьи и добавляйте их в избранное</h2>
-  <button class="get-started button button-primary button-large js-header-start">Приступить</button>
-</header>
 
-<section class="container w-container">
-  <ul class="tabs" id="navigation">
-    <li><a class="tab " href="#" data-name="posts">Посты</a></li>
-    <li><a class="tab active" href="#" data-name="create">Создать</a></li>
-    <li><a class="tab" href="#" data-name="favorite">Избранное</a></li>
-  </ul>
-
-  <div class="loader-wrap hide" id="loader">
-    <div class="lds-ripple"><div></div><div></div></div>
+  <!-- Декоративный фон: размытые градиентные пятна -->
+  <div class="bg-decor" aria-hidden="true">
+    <span class="orb orb-1"></span>
+    <span class="orb orb-2"></span>
   </div>
 
-  <form id="create">
-    <h1 class="h4">Создать новый пост</h1>
+  <!-- Начальный лоадер (скрывается JS после загрузки данных) -->
+  <div id="app-loader" class="loader-overlay">
+    <div class="spinner" aria-hidden="true"></div>
+    <p>Загружаем ваши данные…</p>
+  </div>
 
-    <div class="form-control">
-      <label>Название</label>
-      <input type="text" name="title" placeholder="Введите название">
+  <header class="app-header glass">
+    <div class="brand">
+      <span class="brand-icon"><i class="fa-solid fa-calendar-check"></i></span>
+      <div class="brand-text">
+        <h1>Планировщик</h1>
+        <p>заметки · памятки · задачи · календарь</p>
+      </div>
     </div>
+    <button id="btn-create" class="btn btn-primary" type="button">
+      <i class="fa-solid fa-plus"></i><span>Создать</span>
+    </button>
+  </header>
 
-    <div class="form-control">
-      <label>Текст</label>
-      <textarea name="fulltext" placeholder="Введите текст поста"></textarea>
+  <nav class="tabs glass" id="tabs" aria-label="Разделы приложения">
+    <button class="tab active" data-tab="notes" type="button"><i class="fa-regular fa-note-sticky"></i><span>Заметки</span></button>
+    <button class="tab" data-tab="tasks" type="button"><i class="fa-solid fa-list-check"></i><span>Задачи</span></button>
+    <button class="tab" data-tab="favorites" type="button"><i class="fa-regular fa-star"></i><span>Избранное</span></button>
+    <button class="tab" data-tab="calendar" type="button"><i class="fa-regular fa-calendar-days"></i><span>Календарь</span></button>
+  </nav>
+
+  <main id="app">
+
+    <!-- ===== Заметки и памятки ===== -->
+    <section class="view active" id="view-notes">
+      <div class="view-head">
+        <h2>Заметки и памятки</h2>
+        <span class="count-badge" id="notes-count"></span>
+      </div>
+      <div class="cards-grid" id="notes-list"></div>
+    </section>
+
+    <!-- ===== Задачи ===== -->
+    <section class="view" id="view-tasks">
+      <div class="view-head">
+        <h2>Задачи</h2>
+        <span class="count-badge" id="tasks-count"></span>
+      </div>
+      <div class="cards-grid" id="tasks-list"></div>
+    </section>
+
+    <!-- ===== Избранное ===== -->
+    <section class="view" id="view-favorites">
+      <div class="view-head">
+        <h2>Избранное</h2>
+        <span class="count-badge" id="fav-count"></span>
+      </div>
+      <div class="cards-grid" id="favorites-list"></div>
+    </section>
+
+    <!-- ===== Календарь ===== -->
+    <section class="view" id="view-calendar">
+      <div class="calendar glass">
+        <div class="cal-head">
+          <button class="btn-icon" id="cal-prev" type="button" aria-label="Предыдущий месяц"><i class="fa-solid fa-chevron-left"></i></button>
+          <h2 id="cal-title"></h2>
+          <button class="btn btn-ghost btn-small" id="cal-today" type="button">Сегодня</button>
+          <button class="btn-icon" id="cal-next" type="button" aria-label="Следующий месяц"><i class="fa-solid fa-chevron-right"></i></button>
+        </div>
+        <div class="cal-weekdays" aria-hidden="true">
+          <span>Пн</span><span>Вт</span><span>Ср</span><span>Чт</span><span>Пт</span><span>Сб</span><span>Вс</span>
+        </div>
+        <div class="cal-grid" id="cal-grid"></div>
+      </div>
+
+      <div class="cal-day glass" id="cal-day-panel"></div>
+    </section>
+
+  </main>
+
+  <footer class="app-footer">
+    Планировщик · данные хранятся в Firebase Realtime Database
+  </footer>
+
+  <!-- ===== Модалка создания / редактирования ===== -->
+  <div class="modal-overlay hidden" id="item-modal">
+    <form class="modal glass" id="item-form" novalidate>
+      <h2 id="modal-title">Новая запись</h2>
+
+      <div class="field">
+        <label for="f-title">Название</label>
+        <input id="f-title" name="title" type="text" maxlength="120" placeholder="Короткий заголовок" autocomplete="off">
+        <p class="field-error hidden" data-error-for="title"></p>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="f-kind">Тип</label>
+          <select id="f-kind" name="kind">
+            <option value="note">Заметка</option>
+            <option value="reminder">Памятка</option>
+            <option value="task">Задача</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="f-due">Дата (для календаря)</label>
+          <input id="f-due" name="dueDate" type="date">
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="f-text">Текст <span class="optional-hint">(необязательно)</span></label>
+        <textarea id="f-text" name="text" rows="5" maxlength="5000" placeholder="Подробности…"></textarea>
+        <p class="field-error hidden" data-error-for="text"></p>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" id="btn-cancel">Отмена</button>
+        <button type="submit" class="btn btn-primary" id="btn-save"><i class="fa-solid fa-check"></i><span>Сохранить</span></button>
+      </div>
+    </form>
+  </div>
+
+  <!-- ===== Диалог подтверждения удаления ===== -->
+  <div class="modal-overlay hidden" id="confirm-modal">
+    <div class="modal modal-small glass" role="alertdialog" aria-labelledby="confirm-heading">
+      <h2 id="confirm-heading"><i class="fa-solid fa-triangle-exclamation"></i> Удалить запись?</h2>
+      <p class="confirm-text" id="confirm-text"></p>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" id="btn-confirm-cancel">Отмена</button>
+        <button type="button" class="btn btn-danger" id="btn-confirm-ok"><i class="fa-solid fa-trash"></i><span>Удалить</span></button>
+      </div>
     </div>
+  </div>
 
-    <div class="form-control">
-      <label>Тип</label>
-      <select name="type">
-        <option value="note" selected>Заметка</option>
-        <option value="news">Новость</option>
-      </select>
-    </div>
+  <!-- ===== Тосты ===== -->
+  <div class="toasts" id="toasts" aria-live="polite"></div>
 
-    <button
-      class="button-primary button-round button-shadow"
-      type="submit"
-    >Создать</button>
-  </form>
-  <div id="posts" class="hide"></div>
-  <div id="favorite" class="hide"></div>
-
-</section>
 </body>
 </html>
