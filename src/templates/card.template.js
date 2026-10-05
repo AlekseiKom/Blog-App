@@ -46,7 +46,7 @@ export function renderCard(item) {
 export function renderEmpty(icon, title, hint) {
   return `
   <div class="empty-state">
-    <i class="fa-solid ${icon}"></i>
+    <i class="${icon}"></i>
     <h3>${escapeHtml(title)}</h3>
     <p>${escapeHtml(hint || '')}</p>
   </div>`

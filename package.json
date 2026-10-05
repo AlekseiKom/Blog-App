@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "node --openssl-legacy-provider node_modules/webpack/bin/webpack.js --mode production",
+    "watch": "node scripts/watch-deploy.js",
     "dev": "node --openssl-legacy-provider node_modules/webpack/bin/webpack.js --mode development",
     "start": "node --openssl-legacy-provider node_modules/webpack-dev-server/bin/webpack-dev-server.js --mode development --open"
   },
